@@ -36,7 +36,7 @@
         <div v-if="!isediting">
           <div v-if="!isvisible">
             <button
-              :disabled="isComplete"
+              :disabled="!isComplete"
               type="submit"
               value="Add In Your List"
               class="u-full-width submit"
@@ -51,7 +51,7 @@
         <div v-else>
           <div v-if="!isvisible">
             <button
-              :disabled="isComplete"
+              :disabled="!isComplete"
               type="submit"
               value="Add In Your List"
               class="u-full-width submit"
@@ -130,7 +130,7 @@ export default {
   },
   computed: {
     isComplete() {
-      return this.bookName == "" || this.author == "" || this.released == "";
+      return this.bookName !== "" && this.author !== "" && this.released !== "";
     },
   },
   methods: {
