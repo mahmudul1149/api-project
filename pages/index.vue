@@ -75,14 +75,14 @@
         <th>Delete</th>
       </tr>
 
-      <tr v-for="item in items" :key="item.id" class="userItem">
-        <td>{{ item.bookName }}</td>
+      <tr v-for="item in items" :key="item._id" class="userItem">
+        <td>{{ item.title }}</td>
         <td>{{ item.author }}</td>
         <td>{{ item.released }}</td>
         <td>
           <button class="btn">
             <img
-              @click="updateUser(item.id, item)"
+              @click="updateUser(item._id, item)"
               src="~/assets/image/icons8-pencil-24.png"
               alt=""
             />
@@ -92,7 +92,7 @@
           <div v-if="!isvisibles">
             <button class="btn">
               <svg
-                @click="deleteItem(item.id)"
+                @click="deleteItem(item._id)"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 50 50"
                 width="40px"
@@ -133,12 +133,16 @@ export default {
       return this.bookName !== "" && this.author !== "" && this.released !== "";
     },
   },
+  mounted() {
+    this.getData();
+  },
   methods: {
     async getData() {
       try {
         const { data } = await axios.get(
-          "https://zany-rose-alligator-yoke.cyclic.app/todo/all"
+          "https://backend-todo-api-mahmudul.onrender.com/todo/"
         );
+        console.log(data);
         this.items = data.todos;
       } catch (error) {}
     },
@@ -146,14 +150,16 @@ export default {
       this.isvisible = true;
       this.isSubmitting = true;
       try {
-        await axios.post("https://zany-rose-alligator-yoke.cyclic.app/todo", {
-          bookName: this.bookName,
-          author: this.author,
-          released: this.released,
-        });
-        // this.items = res;
+        await axios.post(
+          "https://backend-todo-api-mahmudul.onrender.com/todo/",
+          {
+            title: this.bookName,
+            author: this.author,
+            released: this.released,
+          }
+        );
         this.items.push({
-          bookName: this.bookName,
+          title: this.bookName,
           author: this.author,
           released: this.released,
         });
@@ -168,19 +174,21 @@ export default {
     },
 
     async deleteItem(id) {
+      console.log(id);
       try {
         await axios.delete(
-          ` https://zany-rose-alligator-yoke.cyclic.app/todo/${id}`
+          `https://backend-todo-api-mahmudul.onrender.com/todo/${id}`
         );
 
         this.items = this.items.filter((el) => el.id !== id);
       } catch (error) {
         console.log(error);
       }
+      this.getData();
     },
     async updateUser(id, item) {
       console.log("Test", id, item);
-      this.bookName = item.bookName;
+      this.bookName = item.title;
       this.author = item.author;
       this.released = item.released;
       this.selectIndex = id;
@@ -192,24 +200,22 @@ export default {
       this.isvisible = true;
       try {
         await axios.put(
-          `https://zany-rose-alligator-yoke.cyclic.app/todo/${this.selectIndex}`,
+          `https://backend-todo-api-mahmudul.onrender.com/todo/${this.selectIndex}`,
           {
-            bookName: this.bookName,
+            title: this.bookName,
             author: this.author,
             released: this.released,
           }
         );
-      } catch (erro) {
-        console.log(erro);
+      } catch (error) {
+        console.log(error);
       } finally {
         this.isediting = false;
         this.isvisible = false;
+        (this.bookName = ""), (this.author = ""), (this.released = "");
         this.getData();
       }
     },
-  },
-  mounted() {
-    this.getData();
   },
 };
 </script>
